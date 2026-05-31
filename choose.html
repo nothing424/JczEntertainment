@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <meta name="theme-color" content="#c9a84c"/>
+  <title>Jcz — Pilih Aplikasi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+  <!-- Firebase Auth Guard -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // ╔══════════════════════════════════════╗
+    // ║   PASTE FIREBASE CONFIG LO DI SINI  ║
+    // ╚══════════════════════════════════════╝
+    const firebaseConfig = {
+      apiKey:"AIzaSyBW6VBAEfWCgGf_QJ3aZ-u_tBOJ_skQ1LY", authDomain:"jczentertaiment.firebaseapp.com",
+      projectId:"jczentertaiment", storageBucket:"jczentertaiment.firebasestorage.app",
+      messagingSenderId:"162448831896", appId:"1:162448831896:web:29f4002b7780249481e7ed"
+    };
+    // ══════════════════════════════════════
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, user => {
+      if (!user) { window.location.href='login.html'; return; }
+      // tampilkan info user
+      const name = user.displayName || user.email?.split('@')[0] || 'User';
+      document.getElementById('u-name').textContent  = name;
+      document.getElementById('u-email').textContent = user.email || '';
+      if(user.photoURL){
+        const av=document.getElementById('u-avatar');
+        av.innerHTML=`<img src="${user.photoURL}" style="width:36px;height:36px;border-radius:50%;border:1.5px solid var(--gold-d);"/>`;
+      } else {
+        document.getElementById('u-avatar').textContent = name.charAt(0).toUpperCase();
+      }
+      document.getElementById('page').style.opacity='1';
+    });
+
+    window.__logout = () => signOut(auth).then(()=>window.location.href='login.html');
+  </script>
+
+  <style>
+    :root{
+      --gold:#c9a84c;--gold-l:#e8c76a;--gold-d:#7a5e28;
+      --bg:#080808;--bg2:#0f0f0f;--bg3:#151515;--bg4:#1c1c1c;
+      --border:rgba(201,168,76,.18);--border2:rgba(201,168,76,.07);
+      --text:#e8e0d0;--text-dim:#8a8070;--text-muted:#3a3530;
+      --fR:'Cinzel',serif;--fB:'Raleway',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:var(--fB);min-height:100vh;}
+
+    #pts{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+    .pt{position:absolute;width:2px;height:2px;background:var(--gold);border-radius:50%;opacity:0;animation:flt linear infinite;}
+    @keyframes flt{0%{transform:translateY(100vh) translateX(0);opacity:0;}10%{opacity:.5;}90%{opacity:.2;}100%{transform:translateY(-10vh) translateX(var(--dx));opacity:0;}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    /* topbar */
+    .topbar{
+      position:sticky;top:0;z-index:10;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:.85rem 1.5rem;
+      background:rgba(8,8,8,.92);backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border2);
+    }
+    .topbar-logo{font-family:var(--fR);font-size:1.1rem;font-weight:900;color:var(--gold);letter-spacing:.2em;}
+    .user-pill{
+      display:flex;align-items:center;gap:.6rem;
+      background:var(--bg3);border:1px solid var(--border2);
+      border-radius:20px;padding:.3rem .85rem .3rem .35rem;
+      cursor:pointer;position:relative;
+    }
+    .u-avatar{
+      width:36px;height:36px;border-radius:50%;
+      background:var(--bg4);border:1.5px solid var(--gold-d);
+      display:flex;align-items:center;justify-content:center;
+      font-family:var(--fR);font-size:.85rem;font-weight:700;color:var(--gold);
+      flex-shrink:0;overflow:hidden;
+    }
+    .u-info{}
+    .u-name{font-size:.78rem;font-weight:600;color:var(--text);}
+    .u-email{font-size:.62rem;color:var(--text-dim);}
+    .u-menu{
+      position:absolute;top:calc(100% + 8px);right:0;
+      background:var(--bg3);border:1px solid var(--border);
+      border-radius:8px;padding:.5rem 0;min-width:160px;
+      z-index:100;display:none;
+    }
+    .user-pill:hover .u-menu{display:block;}
+    .u-menu-item{
+      display:flex;align-items:center;gap:.6rem;
+      padding:.6rem 1rem;cursor:pointer;font-size:.8rem;
+      color:var(--text-dim);transition:all .15s;
+    }
+    .u-menu-item:hover{background:var(--bg4);color:var(--red, #e05252);}
+
+    /* page */
+    #page{opacity:0;transition:opacity .4s;position:relative;z-index:1;}
+
+    .hero-txt{
+      text-align:center;padding:3rem 1rem 2rem;
+    }
+    .hero-crown{font-size:1.8rem;filter:drop-shadow(0 0 12px var(--gold));display:block;margin-bottom:.5rem;}
+    .hero-title{font-family:var(--fR);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;color:var(--gold);letter-spacing:.2em;}
+    .hero-line{width:100px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:.65rem auto;}
+    .hero-sub{font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--text-dim);}
+
+    /* cards */
+    .cards{
+      display:flex;flex-wrap:wrap;gap:1.5rem;
+      justify-content:center;padding:0 1.25rem 3rem;
+      max-width:780px;margin:0 auto;
+    }
+    .app-card{
+      flex:1;min-width:280px;max-width:340px;
+      position:relative;overflow:hidden;
+      border-radius:14px;border:1px solid var(--border);
+      background:linear-gradient(160deg,#141414,#0c0c0c);
+      padding:2.5rem 2rem;
+      cursor:pointer;text-decoration:none;
+      display:flex;flex-direction:column;align-items:center;
+      text-align:center;gap:1rem;
+      transition:all .35s;
+      animation:fadeIn .5s ease both;
+    }
+    .app-card:nth-child(2){animation-delay:.1s;}
+    .app-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.07),transparent 65%);pointer-events:none;}
+    .app-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+    .app-card:hover{transform:translateY(-6px) scale(1.02);border-color:rgba(201,168,76,.38);box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(201,168,76,.1);}
+
+    .ac-icon{font-size:3.5rem;filter:drop-shadow(0 0 10px rgba(201,168,76,.4));transition:transform .3s;line-height:1;}
+    .app-card:hover .ac-icon{transform:scale(1.1);}
+    .ac-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(201,168,76,.1);border:1px solid var(--border);border-radius:3px;padding:.18rem .65rem;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);}
+    .ac-name{font-family:var(--fR);font-size:1.4rem;font-weight:900;letter-spacing:.15em;color:var(--text);}
+    .ac-name span{color:var(--gold);}
+    .ac-desc{font-size:.8rem;color:var(--text-dim);line-height:1.7;}
+    .ac-features{display:flex;flex-direction:column;gap:.35rem;width:100%;text-align:left;}
+    .ac-feat{display:flex;align-items:center;gap:.45rem;font-size:.72rem;color:var(--text-dim);}
+    .ac-feat .fi{color:var(--gold);font-size:.75rem;}
+    .ac-btn{
+      display:flex;align-items:center;justify-content:center;gap:.4rem;
+      background:linear-gradient(135deg,var(--gold),var(--gold-d));
+      border:none;border-radius:var(--r,6px);padding:.72rem 1.5rem;
+      color:#000;font-weight:800;font-family:var(--fR);
+      font-size:.76rem;letter-spacing:.1em;cursor:pointer;
+      transition:all .2s;text-transform:uppercase;width:100%;
+    }
+    .ac-btn:hover{opacity:.9;box-shadow:0 8px 24px rgba(201,168,76,.28);}
+
+    .footer{text-align:center;padding-bottom:2rem;font-size:.62rem;letter-spacing:.2em;color:var(--text-muted);text-transform:uppercase;}
+  </style>
+</head>
+<body>
+
+<div id="pts"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">♛ JCZ</div>
+  <div class="user-pill">
+    <div class="u-avatar" id="u-avatar">?</div>
+    <div class="u-info">
+      <div class="u-name"  id="u-name">...</div>
+      <div class="u-email" id="u-email"></div>
+    </div>
+    <div class="u-menu">
+      <div class="u-menu-item" onclick="window.__logout&&window.__logout()">↩ &nbsp;Keluar</div>
+    </div>
+  </div>
+</div>
+
+<div id="page">
+  <div class="hero-txt">
+    <span class="hero-crown">♛</span>
+    <div class="hero-title">JCZ</div>
+    <div class="hero-line"></div>
+    <div class="hero-sub">✦ Pilih Duniamu ✦</div>
+  </div>
+
+  <div class="cards">
+    <!-- JCZ ANIME -->
+    <a class="app-card" href="anime.html">
+      <div class="ac-badge">⬡ Sub Indonesia</div>
+      <div class="ac-icon">⛩</div>
+      <div class="ac-name"><span>Jcz</span> Anime</div>
+      <div class="ac-desc">Streaming anime Sub Indo langsung dari Samehadaku — gratis, HD, tanpa batas.</div>
+      <div class="ac-features">
+        <div class="ac-feat"><span class="fi">◈</span> Ongoing &amp; Completed</div>
+        <div class="ac-feat"><span class="fi">◈</span> Browse per Genre</div>
+        <div class="ac-feat"><span class="fi">◈</span> Search Real-time</div>
+        <div class="ac-feat"><span class="fi">◈</span> Multi-Server Player</div>
+      </div>
+      <button class="ac-btn">▶ &nbsp;Buka JczAnime</button>
+    </a>
+
+    <!-- JCZ MOVIES -->
+    <a class="app-card" href="movie.html">
+      <div class="ac-badge">◉ Movies &amp; Series</div>
+      <div class="ac-icon">🎬</div>
+      <div class="ac-name"><span>Jcz</span> Movies</div>
+      <div class="ac-desc">Tonton film &amp; serial TV dunia — seperti Netflix tapi gratis.</div>
+      <div class="ac-features">
+        <div class="ac-feat"><span class="fi">◈</span> Movie &amp; TV Series</div>
+        <div class="ac-feat"><span class="fi">◈</span> Trending &amp; Top Rated</div>
+        <div class="ac-feat"><span class="fi">◈</span> Season &amp; Episode</div>
+        <div class="ac-feat"><span class="fi">◈</span> Player HD via Vidking</div>
+      </div>
+      <button class="ac-btn">▶ &nbsp;Buka JczMovies</button>
+    </a>
+  </div>
+
+  <div class="footer">♛ Jcz Entertainment &nbsp;·&nbsp; Dark Luxury Platform</div>
+</div>
+
+<script>
+// particles
+const pts=document.getElementById('pts');
+for(let i=0;i<25;i++){
+  const p=document.createElement('div');p.className='pt';
+  const dx=(Math.random()-.5)*180+'px',dur=9+Math.random()*12,del=Math.random()*10;
+  p.style.cssText=`left:${Math.random()*100}%;--dx:${dx};animation-duration:${dur}s;animation-delay:${del}s;`;
+  pts.appendChild(p);
+}
+</script>
+</body>
+</html>
